@@ -6,6 +6,7 @@ import org.opencv.videoio.VideoCapture;
 import java.util.ArrayList;
 import java.util.List;
 
+//Загальний клас камера
 class Camera {
     int index;
     private VideoCapture capture;
@@ -62,12 +63,12 @@ public class OperateCamera {
 
     OperateCamera() {
         Camera cam1 = new Camera(0);
-        Camera cam2 = new Camera(1);
+        //Camera cam2 = new Camera(1);
         list.add(cam1);
-        list.add(cam2);
+        //list.add(cam2);
         createWindow();
     }
-
+    //Запуск камери
     public void startCameras() {
         active = true;
         for (Camera c : list) {
@@ -78,12 +79,12 @@ public class OperateCamera {
         }
         processFrames();
     }
-
+    //Зупинка камер, використовується для Application
     public void stopCameras() {
         active = false;
         removeCameras();
     }
-
+    //Створення вікна (бажано не чіпати, я підрахую потім)
     private void createWindow() {
         int x = 0;
         int y = 0;
@@ -94,7 +95,7 @@ public class OperateCamera {
             y += 300;
         }
     }
-
+    //Обробка кадрів, відображення на екрані
     private void processFrames() {
         if (!active) return;
 
@@ -110,34 +111,37 @@ public class OperateCamera {
             hasFallen(c);
             HighGui.imshow(c.getName(), c.getFrame());
         }
-
-        // Wait for a key event (30ms delay) to allow OpenCV to process window events
+        //ВСЕ ЩО НІЖЧЕ НІ ЧІПАТИ, ЛЕДВЕ ПРАЦЮЄ!!!
         int key = HighGui.waitKey(30);
-        if (key == 27) { // Exit on ESC key
+        if (key == 27) {
             stopCameras();
             return;
         }
 
-        // Schedule the next frame processing
         javax.swing.Timer timer = new javax.swing.Timer(30, e -> processFrames());
-        timer.setRepeats(false); // Run only once
+        timer.setRepeats(false);
         timer.start();
     }
 
     public boolean hasFallen(Camera c) {
         return c.isMotionBool();
     }
-
+    //Логіка детектору руху
     private void process(Camera cam) {
+        //Матриці
         Mat grey = new Mat();
         Mat diff = new Mat();
         Mat thresh = new Mat();
         Mat dilated = new Mat();
 
+        //Дзеркальне відображення
         Core.flip(cam.getFrame(), cam.getFrame(), 1);
+        //Конвертим в чб формат
         Imgproc.cvtColor(cam.getFrame(), grey, Imgproc.COLOR_BGR2GRAY);
 
+        //Блюр Гауса, почитаєте на вікі
         Imgproc.GaussianBlur(grey, grey, new Size(5, 5), 0);
+
 
         if (cam.getGreyLast().empty()) {
             grey.copyTo(cam.getGreyLast());
@@ -150,6 +154,7 @@ public class OperateCamera {
 
         Imgproc.dilate(thresh, dilated, Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3)));
 
+        //Контури об`єкту який фіксує камера
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(dilated, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -162,7 +167,7 @@ public class OperateCamera {
         }
         Core.addWeighted(cam.getGreyLast(), 0.5, grey, 0.5, 0, cam.getGreyLast());
     }
-
+    //Закриття камер !!!НЕ ЧІПАТИ, ПРАЦЮЄ НА СОПЛЯХ!!!
     public void removeCameras() {
         for (Camera c : list) {
             c.setMotionBool(false);
