@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 public class Application {
     private JFrame mainFrame;
     private JPanel controlPanel;
+    private OperateCamera operateCamera;
 
     public Application() {
         prepareUI();
@@ -16,7 +17,7 @@ public class Application {
         appUI.showLayout();
     }
 
-    private void prepareUI(){
+    private void prepareUI() {
         mainFrame = new JFrame("Tractor");
         mainFrame.setSize(700, 700);
         controlPanel = new JPanel();
@@ -28,8 +29,7 @@ public class Application {
         mainFrame.setVisible(true);
     }
 
-    private void showLayout(){
-
+    private void showLayout() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2, 1, 0, 70));
         JButton showCamerasBtn = new JButton("Show Cameras");
@@ -37,18 +37,27 @@ public class Application {
         showCamerasBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                switch (showCamerasBtn.getText()){
+                    case "Show Cameras":
+                        operateCamera = new OperateCamera();
+                        operateCamera.startCameras();
+                        showCamerasBtn.setText("Hide Cameras");
+                        break;
+                        case "Hide Cameras":
+                            operateCamera.stopCameras();
+                            showCamerasBtn.setText("Show Cameras");
+                            break;
+                }
             }
         });
+
         JButton countValueBtn = new JButton("Count Values");
         Dimension buttonSize = new Dimension(200, 50);
         showCamerasBtn.setPreferredSize(buttonSize);
         countValueBtn.setPreferredSize(buttonSize);
 
-
         buttonPanel.add(showCamerasBtn);
         buttonPanel.add(countValueBtn);
-
 
         buttonPanel.setPreferredSize(new Dimension(250, 170));
 

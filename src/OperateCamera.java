@@ -6,13 +6,14 @@ import org.opencv.videoio.VideoCapture;
 import java.util.ArrayList;
 import java.util.List;
 
-class Camera  {
+class Camera {
     int index;
     private VideoCapture capture;
     private Mat frame;
     private Mat greyLast;
     private String name;
     private boolean motionBool;
+
     public Camera(int index) {
         this.index = index;
         capture = new VideoCapture(index);
@@ -54,56 +55,79 @@ class Camera  {
         return name;
     }
 }
-public class OperateCamera implements Runnable {
-    List<Camera> list = new ArrayList<>();
-    Camera cam1 = new Camera(0);
-    Camera cam2 = new Camera(1);
-    private boolean motionBool = false;
+
+public class OperateCamera {
+    private List<Camera> list = new ArrayList<>();
+    private boolean active = false;
+
     OperateCamera() {
+        Camera cam1 = new Camera(0);
+        Camera cam2 = new Camera(1);
         list.add(cam1);
         list.add(cam2);
         createWindow();
     }
 
-    public boolean isMotionBool() {
-        return motionBool;
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            for (Camera c : list) {
-                c.setMotionBool(false);
-                c.getCapture().read(c.getFrame());
-                if (c.getFrame().empty()) {
-                    System.out.println("Error: Could not capture frame from one or both cameras");
-                    break;
-                }
-                process(c);
-                Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
-                hasFallen(c);
-                HighGui.imshow(c.getName(), c.getFrame());
-            }
-            int key = HighGui.waitKey(30);
-
-            if (key == 27) {
-                break;
+    public void startCameras() {
+        active = true;
+        for (Camera c : list) {
+            if (!c.getCapture().isOpened()) {
+                System.out.println("Error: Could not open camera " + c.getIndex());
+                return;
             }
         }
+        processFrames();
     }
+
+    public void stopCameras() {
+        active = false;
+        removeCameras();
+    }
+
     private void createWindow() {
         int x = 0;
         int y = 0;
         for (Camera c : list) {
             HighGui.namedWindow(c.getName(), HighGui.WINDOW_NORMAL);
             HighGui.resizeWindow(c.getName(), 480, 270);
-            HighGui.moveWindow(c.getName(), x, 10);
-            x+=480;
+            HighGui.moveWindow(c.getName(), 680, y);
+            y += 300;
         }
     }
+
+    private void processFrames() {
+        if (!active) return;
+
+        for (Camera c : list) {
+            c.setMotionBool(false);
+            c.getCapture().read(c.getFrame());
+            if (c.getFrame().empty()) {
+                System.out.println("Error: Could not capture frame from " + c.getName());
+                continue;
+            }
+            process(c);
+            Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
+            hasFallen(c);
+            HighGui.imshow(c.getName(), c.getFrame());
+        }
+
+        // Wait for a key event (30ms delay) to allow OpenCV to process window events
+        int key = HighGui.waitKey(30);
+        if (key == 27) { // Exit on ESC key
+            stopCameras();
+            return;
+        }
+
+        // Schedule the next frame processing
+        javax.swing.Timer timer = new javax.swing.Timer(30, e -> processFrames());
+        timer.setRepeats(false); // Run only once
+        timer.start();
+    }
+
     public boolean hasFallen(Camera c) {
         return c.isMotionBool();
     }
+
     private void process(Camera cam) {
         Mat grey = new Mat();
         Mat diff = new Mat();
@@ -137,5 +161,15 @@ public class OperateCamera implements Runnable {
             }
         }
         Core.addWeighted(cam.getGreyLast(), 0.5, grey, 0.5, 0, cam.getGreyLast());
+    }
+
+    public void removeCameras() {
+        for (Camera c : list) {
+            c.setMotionBool(false);
+            c.getCapture().release();
+        }
+        HighGui.waitKey(1000);
+        HighGui.destroyAllWindows();
+
     }
 }
