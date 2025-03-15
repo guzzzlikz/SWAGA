@@ -68,6 +68,10 @@ public class OperateCamera {
         //list.add(cam2);
         createWindow();
     }
+
+    public boolean isMotionBool() {
+        return motionBool;
+    }
     //Запуск камери
     public void startCameras() {
         active = true;
@@ -108,7 +112,14 @@ public class OperateCamera {
             }
             process(c);
             Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
-            hasFallen(c);
+       
+            if(hasFallen(c)){
+                Counter.Count();
+            }
+                // Count property TODO(Add if based on type of grapes, remove hui pls)
+//                if(Counter.countGrapes == 470){
+//                    System.out.println("HUI");
+//                }
             HighGui.imshow(c.getName(), c.getFrame());
         }
         //ВСЕ ЩО НІЖЧЕ НІ ЧІПАТИ, ЛЕДВЕ ПРАЦЮЄ!!!
