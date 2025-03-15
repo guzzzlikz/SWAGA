@@ -80,7 +80,7 @@ public class OperateCamera implements Runnable {
                     break;
                 }
                 process(c);
-                Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(50, 50), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
+                Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
                 hasFallen(c);
                 HighGui.imshow(c.getName(), c.getFrame());
             }
@@ -92,8 +92,13 @@ public class OperateCamera implements Runnable {
         }
     }
     private void createWindow() {
+        int x = 0;
+        int y = 0;
         for (Camera c : list) {
             HighGui.namedWindow(c.getName(), HighGui.WINDOW_NORMAL);
+            HighGui.resizeWindow(c.getName(), 480, 270);
+            HighGui.moveWindow(c.getName(), x, 10);
+            x+=480;
         }
     }
     public boolean hasFallen(Camera c) {
