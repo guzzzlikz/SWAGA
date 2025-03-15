@@ -81,7 +81,13 @@ public class OperateCamera implements Runnable {
                 }
                 process(c);
                 Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(50, 50), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
-                hasFallen(c);
+                if(hasFallen(c)){
+                    Counter.Count();
+                }
+                // Count property TODO(Add if based on type of grapes, remove hui pls)
+//                if(Counter.countGrapes == 470){
+//                    System.out.println("HUI");
+//                }
                 HighGui.imshow(c.getName(), c.getFrame());
             }
             int key = HighGui.waitKey(30);
