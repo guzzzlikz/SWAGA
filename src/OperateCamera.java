@@ -108,7 +108,9 @@ public class OperateCamera {
             }
             process(c);
             Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
-            hasFallen(c);
+            if(hasFallen(c)){
+                Counter.Count();
+            }
             HighGui.imshow(c.getName(), c.getFrame());
         }
         //ВСЕ ЩО НІЖЧЕ НІ ЧІПАТИ, ЛЕДВЕ ПРАЦЮЄ!!!
