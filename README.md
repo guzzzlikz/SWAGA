@@ -1,0 +1,2 @@
+# SWAGA
+SoftWare AGricultur Analysis
