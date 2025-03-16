@@ -60,7 +60,7 @@ class Camera {
 public class OperateCamera {
     private List<Camera> list = new ArrayList<>();
     private boolean active = false;
-
+    private Counter counter = new Counter();
     OperateCamera() {
         Camera cam1 = new Camera(0);
         //Camera cam2 = new Camera(1);
@@ -108,8 +108,8 @@ public class OperateCamera {
             }
             process(c);
             Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
-            if(hasFallen(c)){
-                Counter.Count();
+            if(hasFallen(c) && !Counter.isFiled){
+                counter.Count();
             }
             HighGui.imshow(c.getName(), c.getFrame());
         }
