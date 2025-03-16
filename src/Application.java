@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -59,13 +61,41 @@ public class Application {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new GridLayout(3, 1, 0, 70));
-        JButton showCamerasBtn = new JButton("Show Cameras");
+        JLabel showCamerasBtn = new JLabel("Show Cameras");
         showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
 
-        showCamerasBtn.addActionListener(new ActionListener() {
+        showCamerasBtn.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (showCamerasBtn.getText()){
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                switch (showCamerasBtn.getText()) {
+                    case "Show Cameras":
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1ShowLock.png"));
+                        break;
+                    case "Hide Cameras":
+
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1HideLock.png"));
+                        break;
+                }
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseEntered(e);
+                switch (showCamerasBtn.getText()) {
+                    case "Show Cameras":
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
+                        break;
+                    case "Hide Cameras":
+
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Hide.png"));
+                        break;
+                }
+            }
+        });
+        showCamerasBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                switch (showCamerasBtn.getText()) {
                     case "Show Cameras":
                         operateCamera = new OperateCamera();
                         operateCamera.startCameras();
@@ -81,18 +111,31 @@ public class Application {
             }
         });
 
-        JButton countValueBtn = new JButton("Count Values");
-        Dimension buttonSize = new Dimension(200, 50);
+        JLabel countValueBtn = new JLabel("Count Values");
+        countValueBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                countValueBtn.setIcon(new ImageIcon("textures\\button2Lock.png"));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                countValueBtn.setIcon(new ImageIcon("textures\\button2.png"));
+            }
+        });
+        countValueBtn.setIcon(new ImageIcon("textures\\button2.png"));
+        Dimension buttonSize = new Dimension(320, 50);
         showCamerasBtn.setPreferredSize(buttonSize);
         countValueBtn.setPreferredSize(buttonSize);
 
         buttonPanel.add(showCamerasBtn);
         buttonPanel.add(countValueBtn);
 
-        buttonPanel.setPreferredSize(new Dimension(250, 270));
+        buttonPanel.setPreferredSize(new Dimension(320, 270));
 
         JPanel wrapperPanel = new JPanel(new GridBagLayout());
-
+        wrapperPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -102,10 +145,9 @@ public class Application {
         gbc.anchor = GridBagConstraints.CENTER;
 
         wrapperPanel.add(buttonPanel, gbc);
-
         controlPanel.add(wrapperPanel, BorderLayout.CENTER);
-        backgroundPanel.add(buttonPanel);
         mainFrame.setContentPane(backgroundPanel);
+        mainFrame.add(controlPanel);
         mainFrame.revalidate();
         mainFrame.repaint();
     }

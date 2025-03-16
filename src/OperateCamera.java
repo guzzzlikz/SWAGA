@@ -3,8 +3,9 @@ import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.*;
+import java.util.*;
+import java.util.Timer;
 
 //Загальний клас камера
 class Camera {
@@ -60,14 +61,17 @@ class Camera {
 public class OperateCamera {
     private List<Camera> list = new ArrayList<>();
     private boolean active = false;
+    private Map<Camera, Long> lastMotionTime = new HashMap<>();
+    private boolean error = false;
+    private String problemCam;
 
     OperateCamera() {
         Camera cam1 = new Camera(0);
-        //Camera cam2 = new Camera(1);
         list.add(cam1);
-        //list.add(cam2);
         createWindow();
+        startErrorCheckTimer(); // Start the error checking timer
     }
+
     //Запуск камери
     public void startCameras() {
         active = true;
@@ -76,6 +80,7 @@ public class OperateCamera {
                 System.out.println("Error: Could not open camera " + c.getIndex());
                 return;
             }
+            lastMotionTime.put(c, System.currentTimeMillis()); // Initialize last motion time
         }
         processFrames();
     }
@@ -107,10 +112,14 @@ public class OperateCamera {
             }
             process(c);
             Imgproc.putText(c.getFrame(), Boolean.toString(c.isMotionBool()), new Point(100, 135), Imgproc.FONT_HERSHEY_COMPLEX_SMALL, 1.0, new Scalar(255, 255, 255), 2);
-            hasFallen(c);
+
+            if (c.isMotionBool()) {
+                lastMotionTime.put(c, System.currentTimeMillis()); // Update last motion time
+            }
+
             HighGui.imshow(c.getName(), c.getFrame());
         }
-        //ВСЕ ЩО НІЖЧЕ НІ ЧІПАТИ, ЛЕДВЕ ПРАЦЮЄ!!!
+
         int key = HighGui.waitKey(30);
         if (key == 27) {
             stopCameras();
@@ -126,6 +135,39 @@ public class OperateCamera {
         return c.isMotionBool();
     }
     //Логіка детектору руху
+    private void startErrorCheckTimer() {
+        Timer timer = new Timer("ErrorCheckTimer");
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                long currentTime = System.currentTimeMillis();
+                for (Camera c : list) {
+                    if (currentTime - lastMotionTime.getOrDefault(c, currentTime) > 3000) {
+                        error = true;
+                        setError(error);
+                        setProblemCam(c.getName());
+                    }
+                }
+            }
+        }, 0, 1000); // Check every second
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
+
+    public String getProblemCam() {
+        return problemCam;
+    }
+
+    public void setProblemCam(String problemCam) {
+        this.problemCam = problemCam;
+    }
+
     private void process(Camera cam) {
         //Матриці
         Mat grey = new Mat();
