@@ -98,7 +98,6 @@ public class OperateCamera {
     //Обробка кадрів, відображення на екрані
     private void processFrames() {
         if (!active) return;
-
         for (Camera c : list) {
             c.setMotionBool(false);
             c.getCapture().read(c.getFrame());

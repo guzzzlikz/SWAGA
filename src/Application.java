@@ -1,12 +1,16 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 public class Application {
     private JFrame mainFrame;
     private JPanel controlPanel;
     private OperateCamera operateCamera;
+    private JPanel backgroundPanel;
 
     public Application() {
         prepareUI();
@@ -19,8 +23,10 @@ public class Application {
 
     private void prepareUI() {
         mainFrame = new JFrame("Tractor");
+        backgroundPanel = new JPanel();
         mainFrame.setSize(700, 700);
         controlPanel = new JPanel();
+        controlPanel.setOpaque(false);
         controlPanel.setLayout(new BorderLayout());
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,9 +36,31 @@ public class Application {
     }
 
     private void showLayout() {
+        JPanel backgroundPanel = new JPanel() {
+            private Image backgroundImage;
+
+            {
+                try {
+                    backgroundImage = ImageIO.read(new File("textures\\background.jpg"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
+        backgroundPanel.setLayout(new BorderLayout());
+
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(2, 1, 0, 70));
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new GridLayout(3, 1, 0, 70));
         JButton showCamerasBtn = new JButton("Show Cameras");
+        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
 
         showCamerasBtn.addActionListener(new ActionListener() {
             @Override
@@ -42,10 +70,12 @@ public class Application {
                         operateCamera = new OperateCamera();
                         operateCamera.startCameras();
                         showCamerasBtn.setText("Hide Cameras");
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Hide.png"));
                         break;
                         case "Hide Cameras":
                             operateCamera.stopCameras();
                             showCamerasBtn.setText("Show Cameras");
+                            showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
                             break;
                 }
             }
@@ -59,7 +89,7 @@ public class Application {
         buttonPanel.add(showCamerasBtn);
         buttonPanel.add(countValueBtn);
 
-        buttonPanel.setPreferredSize(new Dimension(250, 170));
+        buttonPanel.setPreferredSize(new Dimension(250, 270));
 
         JPanel wrapperPanel = new JPanel(new GridBagLayout());
 
@@ -74,7 +104,8 @@ public class Application {
         wrapperPanel.add(buttonPanel, gbc);
 
         controlPanel.add(wrapperPanel, BorderLayout.CENTER);
-
+        backgroundPanel.add(buttonPanel);
+        mainFrame.setContentPane(backgroundPanel);
         mainFrame.revalidate();
         mainFrame.repaint();
     }
