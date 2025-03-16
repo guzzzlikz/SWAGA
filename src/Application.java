@@ -1,5 +1,9 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +19,7 @@ public class Application {
     private OperateCamera operateCamera;
     private JProgressBar progressBar;
     private JPanel backgroundPanel;
+    private JTextField areaField;
 
     public Application() {
         prepareUI();
@@ -41,12 +46,11 @@ public class Application {
     }
 
     private void showLayout() {
-        JPanel backgroundPanel = new JPanel() {
+        backgroundPanel = new JPanel() {
             private Image backgroundImage;
-
             {
                 try {
-                    backgroundImage = ImageIO.read(new File("textures\\background.jpg"));
+                    backgroundImage = ImageIO.read(new File("textures" + File.separator + "background.jpg"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -58,14 +62,15 @@ public class Application {
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
-
         backgroundPanel.setLayout(new BorderLayout());
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new GridLayout(3, 1, 0, 70));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
         JLabel showCamerasBtn = new JLabel("Show Cameras");
-        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
+        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Show.png"));
+        showCamerasBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         showCamerasBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -73,24 +78,22 @@ public class Application {
                 super.mouseEntered(e);
                 switch (showCamerasBtn.getText()) {
                     case "Show Cameras":
-                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1ShowLock.png"));
+                        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1ShowLock.png"));
                         break;
                     case "Hide Cameras":
-
-                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1HideLock.png"));
+                        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1HideLock.png"));
                         break;
                 }
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                super.mouseEntered(e);
+                super.mouseExited(e);
                 switch (showCamerasBtn.getText()) {
                     case "Show Cameras":
-                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
+                        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Show.png"));
                         break;
                     case "Hide Cameras":
-
-                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Hide.png"));
+                        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Hide.png"));
                         break;
                 }
             }
@@ -103,49 +106,60 @@ public class Application {
                         operateCamera = new OperateCamera();
                         operateCamera.startCameras();
                         showCamerasBtn.setText("Hide Cameras");
-                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Hide.png"));
+                        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Hide.png"));
                         break;
-                        case "Hide Cameras":
-                            operateCamera.stopCameras();
-                            showCamerasBtn.setText("Show Cameras");
-                            showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
-                            break;
+                    case "Hide Cameras":
+                        operateCamera.stopCameras();
+                        showCamerasBtn.setText("Show Cameras");
+                        showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Show.png"));
+                        break;
                 }
             }
         });
 
         JLabel countValueBtn = new JLabel("Count Values");
+        countValueBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         countValueBtn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e);
+            public void mouseClicked(MouseEvent e) {
                 dropDownMenu.setVisible(true);
                 progressBar.setVisible(true);
+                areaField.setVisible(true);
                 simulateProgress();
                 mainFrame.revalidate();
                 mainFrame.repaint();
-                countValueBtn.setIcon(new ImageIcon("textures\\button2Lock.png"));
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                countValueBtn.setIcon(new ImageIcon("textures" + File.separator + "button2Lock.png"));
             }
             @Override
             public void mouseExited(MouseEvent e) {
                 super.mouseExited(e);
-                countValueBtn.setIcon(new ImageIcon("textures\\button2.png"));
+                countValueBtn.setIcon(new ImageIcon("textures" + File.separator + "button2.png"));
             }
         });
-        countValueBtn.setIcon(new ImageIcon("textures\\button2.png"));
+        countValueBtn.setIcon(new ImageIcon("textures" + File.separator + "button2.png"));
+
         Dimension buttonSize = new Dimension(320, 50);
         showCamerasBtn.setPreferredSize(buttonSize);
+        showCamerasBtn.setMaximumSize(buttonSize);
         countValueBtn.setPreferredSize(buttonSize);
+        countValueBtn.setMaximumSize(buttonSize);
 
         buttonPanel.add(showCamerasBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 70)));
         buttonPanel.add(countValueBtn);
 
         buttonPanel.setPreferredSize(new Dimension(320, 270));
-        buttonPanel.setPreferredSize(new Dimension(250, 270));
 
         String[] items = Counter.grapes.keySet().toArray(new String[0]);
         dropDownMenu = new JComboBox<>(items);
         dropDownMenu.setPreferredSize(new Dimension(250, 50));
+        dropDownMenu.setMaximumSize(new Dimension(250, 50));
+        dropDownMenu.setAlignmentX(Component.CENTER_ALIGNMENT);
         dropDownMenu.setVisible(false);
 
         dropDownMenu.addActionListener(new ActionListener() {
@@ -153,37 +167,47 @@ public class Application {
             public void actionPerformed(ActionEvent e) {
                 String selectedItem = (String) dropDownMenu.getSelectedItem();
                 Counter.typeOfGrape = selectedItem;
+                System.out.println(areaField.getText() + "га");
             }
         });
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setPreferredSize(new Dimension(250, 20));
+        progressBar.setMaximumSize(new Dimension(250, 20));
+        progressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
         progressBar.setStringPainted(true);
         progressBar.setVisible(false);
 
-        JPanel wrapperPanel = new JPanel(new GridBagLayout());
-        wrapperPanel.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.5;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
+        areaField = new JTextField(10);
+        areaField.setVisible(false);
+        ((AbstractDocument) areaField.getDocument()).setDocumentFilter(new DocumentFilter(){
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                    throws BadLocationException {
+                if(text.matches("\\d*")){
+                    super.replace(fb,offset,length,text,attrs);
+                }
+            }
+        });
 
-        wrapperPanel.add(buttonPanel, gbc);
+        JPanel flexContainer = new JPanel();
+        flexContainer.setOpaque(false);
+        flexContainer.setLayout(new BoxLayout(flexContainer, BoxLayout.Y_AXIS));
 
-        gbc.gridy = 1;
-        gbc.weighty = 0.3;
-        gbc.anchor = GridBagConstraints.NORTH;
-        gbc.insets = new Insets(-100, 0, 0, 0);
-        wrapperPanel.add(dropDownMenu, gbc);
+        flexContainer.add(buttonPanel);
+        flexContainer.add(Box.createRigidArea(new Dimension(0, 30)));
+        flexContainer.add(dropDownMenu);
+        flexContainer.add(Box.createRigidArea(new Dimension(0, 20)));
+        flexContainer.add(progressBar);
+        flexContainer.add(Box.createRigidArea(new Dimension(0, 20)));
+        flexContainer.add(areaField);
 
-        gbc.gridy = 2;
-        gbc.weighty = 0.2;
-        wrapperPanel.add(progressBar, gbc);
+        // Center the flex container in the control panel
+        JPanel centeringPanel = new JPanel(new GridBagLayout());
+        centeringPanel.setOpaque(false);
+        centeringPanel.add(flexContainer);
 
-        controlPanel.add(wrapperPanel, BorderLayout.CENTER);
+        controlPanel.add(centeringPanel, BorderLayout.CENTER);
         mainFrame.setContentPane(backgroundPanel);
         mainFrame.add(controlPanel);
         mainFrame.revalidate();
@@ -204,5 +228,4 @@ public class Application {
             SwingUtilities.invokeLater(() -> progressBar.setValue(100));
         }).start();
     }
-
 }
