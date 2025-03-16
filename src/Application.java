@@ -28,6 +28,7 @@ public class Application {
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.add(controlPanel, BorderLayout.CENTER);
+        mainFrame.setResizable(false);
 
         mainFrame.setVisible(true);
     }
@@ -129,7 +130,7 @@ public class Application {
                     SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
                 }
                 try {
-                    Thread.sleep(500); // Update progress every 500ms
+                    Thread.sleep(500);
                 } catch (InterruptedException ignored) {}
             }
             SwingUtilities.invokeLater(() -> progressBar.setValue(100));
