@@ -1,10 +1,12 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class Application {
     private JFrame mainFrame;
@@ -12,9 +14,12 @@ public class Application {
     private JComboBox<String> dropDownMenu;
     private OperateCamera operateCamera;
     private JProgressBar progressBar;
+    private JPanel backgroundPanel;
+
     public Application() {
         prepareUI();
     }
+
     public static void run() {
         Application appUI = new Application();
         appUI.showLayout();
@@ -22,8 +27,10 @@ public class Application {
 
     private void prepareUI() {
         mainFrame = new JFrame("Tractor");
+        backgroundPanel = new JPanel();
         mainFrame.setSize(700, 700);
         controlPanel = new JPanel();
+        controlPanel.setOpaque(false);
         controlPanel.setLayout(new BorderLayout());
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,35 +41,106 @@ public class Application {
     }
 
     private void showLayout() {
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(3, 1, 0, 70));
-        JButton showCamerasBtn = new JButton("Show Cameras");
+        JPanel backgroundPanel = new JPanel() {
+            private Image backgroundImage;
 
-        showCamerasBtn.addActionListener(new ActionListener() {
+            {
+                try {
+                    backgroundImage = ImageIO.read(new File("textures\\background.jpg"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             @Override
-            public void actionPerformed(ActionEvent e) {
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
+        backgroundPanel.setLayout(new BorderLayout());
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new GridLayout(3, 1, 0, 70));
+        JLabel showCamerasBtn = new JLabel("Show Cameras");
+        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
+
+        showCamerasBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                switch (showCamerasBtn.getText()) {
+                    case "Show Cameras":
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1ShowLock.png"));
+                        break;
+                    case "Hide Cameras":
+
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1HideLock.png"));
+                        break;
+                }
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseEntered(e);
+                switch (showCamerasBtn.getText()) {
+                    case "Show Cameras":
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
+                        break;
+                    case "Hide Cameras":
+
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Hide.png"));
+                        break;
+                }
+            }
+        });
+        showCamerasBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 switch (showCamerasBtn.getText()) {
                     case "Show Cameras":
                         operateCamera = new OperateCamera();
                         operateCamera.startCameras();
                         showCamerasBtn.setText("Hide Cameras");
+                        showCamerasBtn.setIcon(new ImageIcon("textures\\button1Hide.png"));
                         break;
-                    case "Hide Cameras":
-                        operateCamera.stopCameras();
-                        showCamerasBtn.setText("Show Cameras");
-                        break;
+                        case "Hide Cameras":
+                            operateCamera.stopCameras();
+                            showCamerasBtn.setText("Show Cameras");
+                            showCamerasBtn.setIcon(new ImageIcon("textures\\button1Show.png"));
+                            break;
                 }
             }
         });
 
-        JButton countValueBtn = new JButton("Count Values");
-        Dimension buttonSize = new Dimension(200, 50);
+        JLabel countValueBtn = new JLabel("Count Values");
+        countValueBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                dropDownMenu.setVisible(true);
+                progressBar.setVisible(true);
+                simulateProgress();
+                mainFrame.revalidate();
+                mainFrame.repaint();
+                countValueBtn.setIcon(new ImageIcon("textures\\button2Lock.png"));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                countValueBtn.setIcon(new ImageIcon("textures\\button2.png"));
+            }
+        });
+        countValueBtn.setIcon(new ImageIcon("textures\\button2.png"));
+        Dimension buttonSize = new Dimension(320, 50);
         showCamerasBtn.setPreferredSize(buttonSize);
         countValueBtn.setPreferredSize(buttonSize);
 
         buttonPanel.add(showCamerasBtn);
         buttonPanel.add(countValueBtn);
 
+        buttonPanel.setPreferredSize(new Dimension(320, 270));
         buttonPanel.setPreferredSize(new Dimension(250, 270));
 
         String[] items = Counter.grapes.keySet().toArray(new String[0]);
@@ -83,19 +161,8 @@ public class Application {
         progressBar.setStringPainted(true);
         progressBar.setVisible(false);
 
-
-        countValueBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dropDownMenu.setVisible(true);
-                progressBar.setVisible(true);
-                simulateProgress();
-                mainFrame.revalidate();
-                mainFrame.repaint();
-            }
-        });
-
         JPanel wrapperPanel = new JPanel(new GridBagLayout());
+        wrapperPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -117,7 +184,8 @@ public class Application {
         wrapperPanel.add(progressBar, gbc);
 
         controlPanel.add(wrapperPanel, BorderLayout.CENTER);
-
+        mainFrame.setContentPane(backgroundPanel);
+        mainFrame.add(controlPanel);
         mainFrame.revalidate();
         mainFrame.repaint();
     }
