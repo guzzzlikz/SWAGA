@@ -3,7 +3,6 @@ import org.opencv.highgui.HighGui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-import javax.swing.*;
 import java.util.*;
 import java.util.Timer;
 
