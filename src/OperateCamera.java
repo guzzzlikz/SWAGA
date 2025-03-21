@@ -131,7 +131,10 @@ public class OperateCamera {
             stopCameras();
             return;
         }
-
+        if(isError()){
+            SwagaExceptionHandler.showErrorDialog("Blocked tube");
+            setError(false);
+        }
         javax.swing.Timer timer = new javax.swing.Timer(30, e -> processFrames());
         timer.setRepeats(false);
         timer.start();
