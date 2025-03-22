@@ -22,7 +22,7 @@ public class Counter {
     Counter(){
     }
     public void Count(){
-        if(grapes.containsKey(typeOfGrape)){
+        if(grapes.containsKey(typeOfGrape) && !Application.getAreaField().getText().isEmpty() && !Application.getAreaField().hasFocus()) {
             if(countGrapes <= grapes.get(typeOfGrape)){
                 countGrapes++;
                 System.out.println(countGrapes);
@@ -32,7 +32,7 @@ public class Counter {
         }
     }
     public static int percentOfDoneWork() {
-        if (typeOfGrape == null || !grapes.containsKey(typeOfGrape)) return 0;
+        if ((Application.getDropDownMenu().getSelectedItem().equals("нічого не обрано") && !Application.getAreaField().hasFocus() && !Application.getAreaField().getText().isEmpty()) || !grapes.containsKey(typeOfGrape)) return 0;
         double progress = (double) countGrapes / grapes.get(typeOfGrape) * 100;
         return (int) progress;
     }

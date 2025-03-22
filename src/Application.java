@@ -15,11 +15,11 @@ import java.io.IOException;
 public class Application {
     private JFrame mainFrame;
     private JPanel controlPanel;
-    private JComboBox<String> dropDownMenu;
+    private static JComboBox<String> dropDownMenu;
     private OperateCamera operateCamera;
     private JProgressBar progressBar;
     private JPanel backgroundPanel;
-    private JTextField areaField;
+    private static JTextField areaField;
 
     public Application() {
         prepareUI();
@@ -247,5 +247,13 @@ public class Application {
             }
             SwingUtilities.invokeLater(() -> progressBar.setValue(100));
         }).start();
+    }
+
+    public static JComboBox<String> getDropDownMenu() {
+        return dropDownMenu;
+    }
+
+    public static JTextField getAreaField() {
+        return areaField;
     }
 }
