@@ -71,6 +71,13 @@ public class Application {
         JLabel showCamerasBtn = new JLabel("Show Cameras");
         showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Show.png"));
         showCamerasBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JButton submit = new JButton("Submit");
+        submit.setSize(50, 30);
+        submit.setVisible(false);
+        JButton reset = new JButton("Reset");
+        reset.setSize(50, 30);
+        reset.setVisible(false);
+        reset.setEnabled(false);
 
         showCamerasBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -107,13 +114,29 @@ public class Application {
                         operateCamera.startCameras();
                         showCamerasBtn.setText("Hide Cameras");
                         showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Hide.png"));
+                        reset.setEnabled(true);
                         break;
                     case "Hide Cameras":
                         operateCamera.stopCameras();
                         showCamerasBtn.setText("Show Cameras");
                         showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Show.png"));
+                        reset.setEnabled(false);
                         break;
                 }
+            }
+        });
+        reset.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                operateCamera.stopCameras();
+                showCamerasBtn.setText("Show Cameras");
+                showCamerasBtn.setIcon(new ImageIcon("textures" + File.separator + "button1Show.png"));
+                Counter.restartCounter();
+                areaField.setText("");
+                progressBar.setValue(0);
+                reset.setEnabled(false);
+                dropDownMenu.setSelectedItem("nothing chosen");
+                simulateProgress();
             }
         });
 
@@ -126,6 +149,8 @@ public class Application {
                 dropDownMenu.setVisible(true);
                 progressBar.setVisible(true);
                 areaField.setVisible(true);
+                submit.setVisible(true);
+                reset.setVisible(true);
                 simulateProgress();
                 mainFrame.revalidate();
                 mainFrame.repaint();
@@ -156,7 +181,7 @@ public class Application {
         buttonPanel.add(countValueBtn);
         buttonPanel.setPreferredSize(new Dimension(320, 270));
         String[] items = new String[Counter.grapes.size() + 1];
-        items[0] = "нічого не обрано";
+        items[0] = "nothing chosen";
 
         int index = 1;
         for (String s : Counter.grapes.keySet()) {
@@ -186,6 +211,8 @@ public class Application {
         progressBar.setVisible(false);
 
         areaField = new JTextField(10);
+        areaField.setPreferredSize(new Dimension(250, 20));
+        areaField.setMaximumSize(new Dimension(250, 20));
         areaField.setVisible(false);
         ((AbstractDocument) areaField.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
@@ -208,17 +235,25 @@ public class Application {
             }
         });
 
+        JPanel areaPanel = new JPanel();
+        areaPanel.setOpaque(false);
+        areaPanel.setLayout(new BoxLayout(areaPanel, BoxLayout.X_AXIS));
+        areaPanel.add(areaField);
+        areaPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        areaPanel.add(submit);
+        areaPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        areaPanel.add(reset);
+
         JPanel flexContainer = new JPanel();
         flexContainer.setOpaque(false);
         flexContainer.setLayout(new BoxLayout(flexContainer, BoxLayout.Y_AXIS));
-
         flexContainer.add(buttonPanel);
         flexContainer.add(Box.createRigidArea(new Dimension(0, 30)));
         flexContainer.add(dropDownMenu);
         flexContainer.add(Box.createRigidArea(new Dimension(0, 20)));
         flexContainer.add(progressBar);
         flexContainer.add(Box.createRigidArea(new Dimension(0, 20)));
-        flexContainer.add(areaField);
+        flexContainer.add(areaPanel);
 
         JPanel centeringPanel = new JPanel(new GridBagLayout());
         centeringPanel.setOpaque(false);
@@ -264,5 +299,9 @@ public class Application {
 
     public static JTextField getAreaField() {
         return areaField;
+    }
+
+    public static void setAreaField(JTextField areaField) {
+        Application.areaField = areaField;
     }
 }

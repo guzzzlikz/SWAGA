@@ -1,5 +1,9 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
 public class SwagaExceptionHandler {
@@ -13,6 +17,17 @@ public class SwagaExceptionHandler {
 
     private static void showModalDialogOnEDT(String e) {
         JDialog dialog = createErrorDialog(e);
+        String soundFilePath = "sounds\\fail.wav";
+            try {
+                File soundFile = new File(soundFilePath);
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.start();
+                Thread.sleep(clip.getMicrosecondLength() / 1000);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+        }
         dialog.setModal(true);
         dialog.setVisible(true);
     }
@@ -78,7 +93,6 @@ public class SwagaExceptionHandler {
         buttonPanel.add(closeButton);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Make dialog close on ESC key
         dialog.getRootPane().registerKeyboardAction(
                 e1 -> dialog.dispose(),
                 KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0),

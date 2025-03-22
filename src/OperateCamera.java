@@ -20,6 +20,7 @@ class Camera {
         capture = new VideoCapture(index);
         frame = new Mat();
         greyLast = new Mat();
+        index++;
         name = "Camera" + index;
         motionBool = false;
     }
@@ -66,10 +67,16 @@ public class OperateCamera {
 
     private Counter counter = new Counter();
     OperateCamera() {
-        Camera cam1 = new Camera(0);
-        //Camera cam2 = new Camera(1);
-        list.add(cam1);
-        //list.add(cam2);
+        int device_counts = 0;
+        VideoCapture vc = new VideoCapture();
+        while ( true ) {
+            if ( !vc.open(device_counts) ) {
+                break;
+            } else {
+                list.add(new Camera(device_counts));
+                device_counts++;
+            }
+        }
         createWindow();
         startErrorCheckTimer(); // Start the error checking timer
     }
@@ -93,13 +100,17 @@ public class OperateCamera {
     }
     //Створення вікна (бажано не чіпати, я підрахую потім)
     private void createWindow() {
-        int x = 0;
+        int x = 680;
         int y = 0;
         for (Camera c : list) {
             HighGui.namedWindow(c.getName(), HighGui.WINDOW_NORMAL);
             HighGui.resizeWindow(c.getName(), 480, 270);
-            HighGui.moveWindow(c.getName(), 680, y);
+            HighGui.moveWindow(c.getName(), x, y);
             y += 300;
+            if (y == 600) {
+                y = 0;
+                x += 460;
+            }
         }
     }
     //Обробка кадрів, відображення на екрані
@@ -132,8 +143,14 @@ public class OperateCamera {
             return;
         }
         if(isError()){
-            SwagaExceptionHandler.showErrorDialog("Blocked tube");
-            setError(false);
+            if (Counter.isIsFiled()) {
+                setError(false);
+
+
+            } else {
+                SwagaExceptionHandler.showErrorDialog("Blocked tube");
+                setError(false);
+            }
         }
         javax.swing.Timer timer = new javax.swing.Timer(30, e -> processFrames());
         timer.setRepeats(false);

@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SWAGA:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SWAGA_jar</output-path>
+    <root id="archive" name="SWAGA.jar">
+      <element id="module-output" name="SWAGA" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../opencv/build/java/opencv-4110.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
