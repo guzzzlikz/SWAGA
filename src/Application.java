@@ -20,6 +20,7 @@ public class Application {
     private JProgressBar progressBar;
     private JPanel backgroundPanel;
     private static JTextField areaField;
+    private JTextField needed;
 
     public Application() {
         prepareUI();
@@ -140,6 +141,13 @@ public class Application {
             }
         });
 
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                needed.setText("Needed seeds " + (Counter.grapesKilos.get(dropDownMenu.getSelectedItem()) / 100000) + "kg");
+            }
+        });
+
         JLabel countValueBtn = new JLabel("Count Values");
         countValueBtn.setName("Count Values");
         countValueBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -151,6 +159,7 @@ public class Application {
                 areaField.setVisible(true);
                 submit.setVisible(true);
                 reset.setVisible(true);
+                needed.setVisible(true);
                 simulateProgress();
                 mainFrame.revalidate();
                 mainFrame.repaint();
@@ -214,6 +223,12 @@ public class Application {
         areaField.setPreferredSize(new Dimension(250, 20));
         areaField.setMaximumSize(new Dimension(250, 20));
         areaField.setVisible(false);
+
+        needed = new JTextField();
+        needed.setPreferredSize(new Dimension(250, 20));
+        needed.setMaximumSize(new Dimension(250, 20));
+        needed.setVisible(false);
+
         ((AbstractDocument) areaField.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
@@ -243,6 +258,9 @@ public class Application {
         areaPanel.add(submit);
         areaPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         areaPanel.add(reset);
+        areaPanel.add(Box.createRigidArea(new Dimension(20, 20)));
+        areaPanel.add(needed);
+
 
         JPanel flexContainer = new JPanel();
         flexContainer.setOpaque(false);

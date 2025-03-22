@@ -23,6 +23,17 @@ public class Counter {
         put("sugar beets", 11.0 * STEP);
         put("hemp", 70.0 * STEP);
     }};
+    public static Map<String, Double> grapesKilos  = new HashMap(){{
+        put("wheat", STEP * 2125.0 * sotka);
+        put("corn", STEP * 272.0 * sotka);
+        put("rye", STEP * 1760.0 * sotka);
+        put("barley", STEP * 1575.0 * sotka);
+        put("oat", STEP * 1125.0 * sotka);
+        put("sunflower", STEP * 36.0 * sotka);
+        put("soy", STEP * 840.0 * sotka);
+        put("sugar beets", STEP * 22.0 * sotka);
+        put("hemp", STEP * 140.0 * sotka);
+    }};
 
     Counter(){
     }
