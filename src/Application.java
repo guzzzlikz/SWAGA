@@ -151,7 +151,6 @@ public class Application {
         showCamerasBtn.setMaximumSize(buttonSize);
         countValueBtn.setPreferredSize(buttonSize);
         countValueBtn.setMaximumSize(buttonSize);
-
         buttonPanel.add(showCamerasBtn);
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 70)));
         buttonPanel.add(countValueBtn);
@@ -188,13 +187,24 @@ public class Application {
 
         areaField = new JTextField(10);
         areaField.setVisible(false);
-        ((AbstractDocument) areaField.getDocument()).setDocumentFilter(new DocumentFilter(){
+        ((AbstractDocument) areaField.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                     throws BadLocationException {
-                if(text.matches("\\d*")){
-                    super.replace(fb,offset,length,text,attrs);
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+
+                if (newText.isEmpty() || newText.matches("^[1-9]\\d*$")) {
+                    super.replace(fb, offset, length, text, attrs);
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
                 }
+            }
+
+            @Override
+            public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr)
+                    throws BadLocationException {
+                replace(fb, offset, 0, text, attr);
             }
         });
 
@@ -210,7 +220,6 @@ public class Application {
         flexContainer.add(Box.createRigidArea(new Dimension(0, 20)));
         flexContainer.add(areaField);
 
-        // Center the flex container in the control panel
         JPanel centeringPanel = new JPanel(new GridBagLayout());
         centeringPanel.setOpaque(false);
         centeringPanel.add(flexContainer);
