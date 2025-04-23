@@ -135,6 +135,7 @@ public class Application {
                 Counter.restartCounter();
                 areaField.setText("");
                 progressBar.setValue(0);
+                needed.setText("");
                 reset.setEnabled(false);
                 dropDownMenu.setSelectedItem("nothing chosen");
                 simulateProgress();
