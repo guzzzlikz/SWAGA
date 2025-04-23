@@ -75,7 +75,7 @@ public class SwagaExceptionHandler {
             solutionArea = new JTextArea("Clean your tube!");
         } else {
             messageLabel = new JLabel("<html><b>Error:</b> Unknown error</html>");
-            solutionArea = new JTextArea("Come on, you are smart!\nDo it by yourself!");
+            solutionArea = new JTextArea("Fix solution not found!");
         }
 
         messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
