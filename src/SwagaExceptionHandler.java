@@ -16,8 +16,9 @@ public class SwagaExceptionHandler {
     }
 
     private static void showModalDialogOnEDT(String e) {
-        JDialog dialog = createErrorDialog(e);
-        String soundFilePath = "sounds\\fail.wav";
+        while(true) {
+            JDialog dialog = createErrorDialog(e);
+            String soundFilePath = "sounds\\fail.wav";
             try {
                 File soundFile = new File(soundFilePath);
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
@@ -27,9 +28,10 @@ public class SwagaExceptionHandler {
                 Thread.sleep(clip.getMicrosecondLength() / 1000);
             } catch (Exception ex) {
                 ex.printStackTrace();
+            }
+            dialog.setModal(true);
+            dialog.setVisible(true);
         }
-        dialog.setModal(true);
-        dialog.setVisible(true);
     }
 
     private static void showModalDialogFromOtherThread(String e) {

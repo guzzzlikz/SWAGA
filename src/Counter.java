@@ -22,6 +22,8 @@ public class Counter {
         put("soy", 48.0 * STEP);
         put("sugar beets", 11.0 * STEP);
         put("hemp", 70.0 * STEP);
+        put("pisun", 55 * sotka * STEP);
+        put("clitor", 65 * sotka * STEP);
     }};
     public static Map<String, Double> grapesKilos  = new HashMap(){{
         put("wheat", STEP * 2125.0 * sotka);
@@ -33,6 +35,8 @@ public class Counter {
         put("soy", STEP * 840.0 * sotka);
         put("sugar beets", STEP * 22.0 * sotka);
         put("hemp", STEP * 140.0 * sotka);
+        put("pisun", 55 * sotka * STEP);
+        put("clitor", 65 * sotka * STEP);
     }};
 
     Counter(){
@@ -82,6 +86,8 @@ public class Counter {
         grapes.put("soy", 48.0 * sotka * STEP);
         grapes.put("sugar beets", 11.0 * sotka * STEP);
         grapes.put("hemp", 70.0 * sotka * STEP);
+        grapes.put("pisun", 55 * sotka * STEP);
+        grapes.put("clitor", 65 * sotka * STEP);
     }
 
     public static boolean isIsFiled() {

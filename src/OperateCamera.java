@@ -234,7 +234,10 @@ public class OperateCamera {
         }
         Core.addWeighted(cam.getGreyLast(), 0.5, grey, 0.5, 0, cam.getGreyLast());
     }
-    //Закриття камер !!!НЕ ЧІПАТИ!!!
+    /*Закриття камер !!!НЕ ЧІПАТИ!!!
+    (ЯКЩО Я СУКА ПОБАЧУ ХОЧ ВІД КОГОСЬ КОМІТ ДЕ ЦЮ СТРОКУ ВИДАЛЕНО
+    ПЕРЕХУЯРЮ ВАС ВСІХ К ЄБЄНІ МАТЕРІ)
+    */
     public void removeCameras() {
         for (Camera c : list) {
             c.setMotionBool(false);
